@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Data;
@@ -39,6 +39,7 @@ namespace ErikEJ.SqlCeScripting
         private bool _sqlite;
         private bool _preserveDateAndDateTime2;
         private bool _truncateSqLiteStrings;
+        public int SplitLargeOutput { get; set; }
 
 #if V40
         /// <summary>
@@ -98,6 +99,7 @@ namespace ErikEJ.SqlCeScripting
             _allPrimaryKeys = repository.GetAllPrimaryKeys();
             _allTriggers = repository.GetAllTriggers();
             _allViews = repository.GetAllViews();
+            SplitLargeOutput = 9485760;
             if (!repository.IsServer())
                 _allIndexes = repository.GetAllIndexes();
 
@@ -556,7 +558,7 @@ namespace ErikEJ.SqlCeScripting
                         _sbScript.Append(_sep);
                     }
                     // Split large output!
-                    if (_sbScript.Length > 9485760 && !string.IsNullOrEmpty(_outFile))
+                    if (SplitLargeOutput > 0 && _sbScript.Length > SplitLargeOutput && !string.IsNullOrEmpty(_outFile))
                     {
                         if (_batchForAzure)
                         {
